@@ -1,27 +1,250 @@
-task.spawn(function()
-    task.wait(20)
-    local chatrem = game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest
-    while task.wait(1) do
+getgenv().config = {
+    mainac = "YTB_NamTTP",
+    cloneacc = 
+    [[
+    hypno5d8]],
+    chest = "LagoonCrate", -- LagoonCrate = coconut
+    link = "https://6b86-2405-4802-c0f1-dc00-ecaa-1648-d820-b926.ngrok-free.app",
+}
 
-        chatrem:FireServer('mua gems gia sieu re tai nocblox . c o m', "All")
-        wait(2)
-        chatrem:FireServer('gems toilet va anime gia re tai nocblox . c o m', "All")
-        wait(2)
-        chatrem:FireServer('mua unit chu ky gia sieu re tai nocblox . c o m', "All")
-        wait(2)
-        chatrem:FireServer('mua ạc blocfruits gia sieu re tai n ᴏ c b ʟ ᴏ x . c ᴏ m', "All")
-        wait(2)
-        chatrem:FireServer('mua gems gia sieu re taii nocblox . c o m', "All")
-        wait(2)
-        chatrem:FireServer('gems toilet va anime gia re tai nocblox . c o m', "All")
-        wait(2)
-        chatrem:FireServer('ae mua gems toilet va anime tai nocblox . c o m', "All")
-        wait(2)
-        chatrem:FireServer('ae mua ẹc bloc phút giá gẻ tai nocblox . c o m', "All")
-        wait(2)
-        chatrem:FireServer('mua gems gia sieu re tai nocblox . c o m', "All")
-        wait(2)
-        chatrem:FireServer('mua unit chu ky gia sieu re tai nocblox . c o m', "All")
-        wait(1)
-    end
+local realacc = {}
+for i,v in pairs(string.split(getgenv().config.cloneacc, "\n")) do
+    local formated = string.gsub(v, " ", "")
+    table.insert(realacc, formated)
+end
+
+local Storage = nil;
+local plr = game.Players.LocalPlayer
+local framework = game:GetService("ReplicatedStorage"):WaitForChild("MultiboxFramework")
+Storage = require(framework)
+hookfunction(getfenv, function() assert(1 == 2) end)
+
+-- function getCrates(name,type1)
+--     local table = {}
+--     local v79 = Storage.Inventory.GetAllCopies({
+--         type1,
+--     });
+    
+--     for i,v in pairs(v79) do
+--         if v[2] == name then
+--             table.insert(table, v[3])
+--         end
+--     end
+--     return table
+-- end
+
+-- print(getCrates(config.chest, "Crates"))
+
+function jsonencode(data) 
+    return game:GetService("HttpService"):JSONEncode(data)
+end
+
+function jsondecode(data) 
+    return game:GetService("HttpService"):JSONDecode(data)
+end
+
+function get(url)
+    return request({
+        Url = url,
+        Method = "GET",
+    })
+end
+
+function post(url,data)
+    return request({
+        Url = url,
+        Headers = {
+            ["content-type"] = "application/json"
+        },
+        Method = "POST",
+        Body = jsonencode(data),
+    })
+end
+
+local vu = game:GetService("VirtualUser")
+game.Players.LocalPlayer.Idled:connect(function()
+    vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    wait(1)
+    vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 end)
+
+-- setup network
+
+getgenv().bypass = false
+function bypass()
+    if not getgenv().bypass then
+        hookfunction(getfenv, function() assert(1 == 2) end)
+        getgenv().bypass = true
+    end
+end
+
+function FireRemote(name, ...)
+    bypass()
+    Storage.Network.Fire(name, ...)
+end
+
+function InvokeRemote(name, ...)
+    bypass()
+    Storage.Network.Invoke(name, ...)
+end
+
+-- "Troops",
+
+while game.PlaceId == 13775256536 do wait(5)
+    if game.PlaceId == 13775256536 and plr.Name ~= getgenv().config.mainac then
+        game:GetService("TeleportService"):TeleportToPlaceInstance(14682939953, jsondecode(get(config.link .. "/get").Body).jobid , plr)
+        return
+    else
+        FireRemote("TeleportToTradingPlaza")
+    end
+end
+
+if plr.Name == getgenv().config.mainac then
+    post(config.link .. "/post" , {jobid = tostring(game.JobId)})
+end
+
+--- setup accept 
+
+local Player = cloneref(game:GetService("Players"))
+
+local Notiframe = Player.LocalPlayer.PlayerGui.MainFrames.NotificationFrame
+
+function checkuser(name)
+    local Player = cloneref(game:GetService("Players"))
+    for i,v in pairs(Player:GetChildren()) do
+        if v.Name == name then
+            return true
+        end
+    end
+    return false
+end
+
+function findtradeacc()
+    local result = "anhdangpuan03"
+    for i,v in pairs(realacc) do
+        if checkuser(v) == true then
+            result = v
+        end
+    end
+    return result
+end
+
+function getcanaccept()
+    local Notiframe = Player.LocalPlayer.PlayerGui.MainFrames.NotificationFrame
+    if Notiframe.Visible == true then
+        local text = Notiframe.BigNotification.NotificationMessage.Text
+        local faketext = findtradeacc() .. " sent you a trade request!"
+        if text == faketext then
+            return true
+        else
+            return false
+        end
+    end
+end
+
+function getCrates(name,type1)
+    local tablea = {}
+    local num = 0
+    local v79 = Storage.Inventory.GetAllCopies({
+        type1,
+    });
+    
+    for i,v in pairs(v79) do
+        if v[2] == name and v[3] and not v[4].SB then
+            num = num + 1
+            if #tablea < 40 then
+                table.insert(tablea, v[3])
+            end
+        end
+    end
+    return {tablea, num}
+end
+
+function getCrateshasSign(name,type1)
+    local tablea = {}
+    local num = 0
+    local v79 = Storage.Inventory.GetAllCopies({
+        type1,
+    });
+    
+    for i,v in pairs(v79) do
+        if v[2] == name and v[3] and v[4].SB then
+            num = num + 1
+            if #tablea < 40 then
+                table.insert(tablea, v[3])
+            end
+        end
+    end
+    return {tablea, num}
+end
+
+spawn(function()
+    writefile("getback.txt", getCrates(config.chest, "Crates")[2] + getCrateshasSign(config.chest, "Crates")[2])
+end)
+
+-- main account se accept con acc phu se send request
+-- getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Trading.TradingFrame.TradeMenu.TradeActions.Accept.Activated)[1]:Fire()
+
+while true do wait(.5)
+    local a,b = pcall(function()
+        if plr.Name == getgenv().config.mainac then
+            if getcanaccept() == true then
+                getconnections(Notiframe.BigNotification.Buttons.YesButton.Btn.Activated)[1]:Fire()
+            else
+                getconnections(Notiframe.BigNotification.Buttons.NoButton.Btn.Activated)[1]:Fire()
+                wait(1)
+                getconnections(Notiframe.BigNotification.Buttons.OkButton.Btn.Activated)[1]:Fire()
+            end
+
+            local tradingframe = Player.LocalPlayer.PlayerGui.Trading.TradingFrame
+            local createsb = getCrateshasSign(config.chest, "Crates")
+
+            if tradingframe.Visible == true then
+                if createsb[2] > 0 then
+                    for i,v in pairs(createsb[1]) do
+                        FireRemote("Trading_AddItemToTrade", "Crates", v)
+                        wait(1)
+                    end
+                end
+                getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Trading.TradingFrame.TradeMenu.TradeActions.Accept.Activated)[1]:Fire()
+                wait(10)
+            else
+                for i,v in pairs(getCrates(config.chest, "Crates")[1]) do
+                    FireRemote("SignItem", "Crates", v)
+                    wait(1)
+                end
+            end
+        else
+            if checkuser(config.mainac) == false then
+                if game.JobId ~= jsondecode(get(config.link .. "/get").Body).jobid then
+                    game:GetService("TeleportService"):TeleportToPlaceInstance(14682939953, jsondecode(get(config.link .. "/get").Body).jobid , plr)
+                    wait(5)
+                end
+            end
+
+            local tradingframe = Player.LocalPlayer.PlayerGui.Trading.TradingFrame
+            local create = getCrates(config.chest, "Crates")[2]
+            local createsb = getCrateshasSign(config.chest, "Crates")[2]
+
+            if create == 0 and createsb > 0 then
+                local data = readfile("getback.txt")
+                if tonumber(data) >= (createsb + create) then
+                    writefile(plr.Name .. ".txt", "completed")
+                end
+            end
+
+            if tradingframe.Visible == false and create > 0 then
+                print("Trade request")
+                InvokeRemote("Trading_SendTradeRequest", game.Players[getgenv().config.mainac])
+            else
+                for i,v in pairs(getCrates(config.chest, "Crates")[1]) do
+                    FireRemote("Trading_AddItemToTrade", "Crates", v)
+                    wait(1)
+                end
+                getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Trading.TradingFrame.TradeMenu.TradeActions.Accept.Activated)[1]:Fire()
+                wait(10)
+            end
+        end
+    end)
+    print(a,b)
+end
